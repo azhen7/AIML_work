@@ -1,1 +1,1 @@
-# AI/ML projoect for superconfuctor analysis
+# AI/ML project for superconductor analysis
