@@ -13,11 +13,23 @@ def is_nan(x):
 
 def create_template():
     num_elem = len(elements._element)
-    element_list = list(range(0, num_elem))
     value_list = [0.0]*num_elem
-    data_template = list(zip(element_list, value_list))
-    res = np.array(data_template)
+    res = np.array(value_list)
+    res = np.expand_dims(res, axis=1)
     return res
+
+# check if string contain int or float number
+# or it is a true string 
+def string_or_number(s):
+    try:
+        z = int(s)
+        return z
+    except ValueError:
+        try:
+            z = float(s)
+            return z
+        except ValueError:
+            return s
 
 dataset = []
 
@@ -46,33 +58,70 @@ def split_elename_and_value(row_data):
  
     # splits is to in format of pair of element name, value (all in strng)
     # the number of pairs varies 
-    num_pairs = len(splits)//2
-
     print(elements.symbol)
 
-    for index in range(num_pairs):
-        ele_sym = splits[index*2]
-     
-        try:
-            ele = elements.symbol(ele_sym)
-        except ValueError as msg:
-            assert str(msg) == "unknown element:" + ele_sym 
+    # locate all symbol positions
+    symbol_pos = []
+    index = 0
+    while index < len(splits):
+        ele_sym = splits[index]
+        print(type(ele_sym))
+        if type(string_or_number(ele_sym)) == str:
+            try:
+                ele = elements.symbol(ele_sym)
+                symbol_pos.append(index)
+            except ValueError as msg:
+                print(str(msg))
 
-        print(ele.number)
-    return 
+        index = index+1
+
+    element_id = []
+    element_value = []
+    total_value = 0
+    for pos in symbol_pos:
+        init_pos = pos
+        ele = elements.symbol(splits[init_pos])
+        element_id.append(ele.number)
+        init_pos = init_pos+1
+        if init_pos < len(splits):
+            value = string_or_number(splits[init_pos])
+            if type(value) == int or float:
+                element_value.append(value)
+                total_value = total_value + value
+            else:
+                element_value.append(-1)
+        else:
+            element_value.append(-1)
+
+    if element_value.count(-1) > 0:
+        split_value = (1-total_value)/element_value.count(-1)
+        element_value = [split_value if item == -1 else item for item in element_value]
+         
+
+    return list(zip(element_id, element_value))
 
 
 def parse_file(file, sheet):
     data = pd.read_excel(open(file, 'rb'), sheet_name=sheet)
-
+    
+    np_arr = np.empty([1, 119, 1])
     for index, row in data.iterrows():
         print(row.Compound)
 
         if(is_nan(row.Compound)==False):
-            split_elename_and_value(row.Compound)
+            data_point = create_template()
+            ret = split_elename_and_value(row.Compound)
+            for item in ret:
+                data_point[item[0]] = item[1]
+
+            data_point = np.expand_dims(data_point, axis=0)
+            np_arr= np.concatenate((np_arr, data_point), axis=0)
+
+    
+    return np_arr[1:, :]
 
 print(os.getcwd())
 
-create_template()
 
-parse_file('./AIML_work/superconductor.xlsx', 'Sheet1')
+ret = parse_file('./AIML_work/superconductor.xlsx', 'Sheet1')
+print(ret[0])
