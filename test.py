@@ -124,7 +124,6 @@ def parse_file(file, sheet):
                 data_point[item[0]] = item[1]
 
             if(is_nan(row.Tc)==False):
-                check = type(row.Tc) is int or float
                 if isinstance(row.Tc, int) or isinstance(row.Tc, float):
                     data_point = np.expand_dims(data_point, axis=0)
                     np_arr= np.concatenate((np_arr, data_point), axis=0)
