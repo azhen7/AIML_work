@@ -118,13 +118,13 @@ def parse_file(file, sheet):
     for _, row in data.iterrows():
         print(row.Compound)
 
-        if(is_nan(row.Compound)==False):
+        if not is_nan(row.Compound):
             data_point = create_template()
             ret = split_elename_and_value(row.Compound)
             for item in ret:
                 data_point[item[0]] = item[1]
 
-            if(is_nan(row.Tc)==False):
+            if not is_nan(row.Tc):
                 if isinstance(row.Tc, int) or isinstance(row.Tc, float):
                     data_point = np.expand_dims(data_point, axis=0)
                     np_arr= np.concatenate((np_arr, data_point), axis=0)
