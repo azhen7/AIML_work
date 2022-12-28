@@ -57,10 +57,11 @@ def split_elename_and_value(row_data):
         
         MATCHING ELEMENT NAME:
         1. matches letters
-         - [a-z A-Z] matches all letters
-         - + matches 1-or-more times
+         - [A-Z] matches all uppercase letters
+         - [a-z] matches all lowercase letters
+         - '?' matches 0-or-1 times
     """
-    name_pattern = r"\d\.?\d*|[a-z A-Z]+"
+    name_pattern = r"\d\.?\d*|[A-Z][a-z]?"
     splits = re.findall(name_pattern, row_data)
  
     # splits is to in format of pair of element name, value (all in strng)
