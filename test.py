@@ -115,7 +115,7 @@ def parse_file(file, sheet):
     np_arr = np.empty([1, 120, 1])
     label = []
 
-    for index, row in data.iterrows():
+    for _, row in data.iterrows():
         print(row.Compound)
 
         if(is_nan(row.Compound)==False):
