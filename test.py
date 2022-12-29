@@ -223,4 +223,4 @@ net.float()
 dummy_input = torch.randn(1, 1, 10, 12)
 
 
-torch.onnx.export(net, dummy_input ,"model_pytorch.onnx", verbose=True)   
+torch.onnx.export(net, dummy_input ,"model_pytorch.onnx", verbose=True)
