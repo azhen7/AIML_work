@@ -3,8 +3,11 @@ import pandas as pd;
 def parse_csv(filename):
     parsed = pd.read_csv(filename)
     
-    a = parsed.query('Tc == 0')
+    fail = parsed.query('Tc == 0')
+    succeed = parsed.query('Tc != 0')
     
-    a.to_excel('fails.xlsx')
+    with pd.ExcelWriter('seperated_results.xlsx') as writer:
+        fail.to_excel(writer, sheet_name="Fail")
+        succeed.to_excel(writer, sheet_name="Success")
     
 parse_csv("superconduct_2.csv")
