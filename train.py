@@ -66,14 +66,14 @@ def split_elename_and_value(row_data):
  
     # splits is to in format of pair of element name, value (all in strng)
     # the number of pairs varies 
-    print(elements.symbol)
+    #print(elements.symbol)
 
     # locate all symbol positions
     symbol_pos = []
     index = 0
     while index < len(splits):
         ele_sym = splits[index]
-        print(type(ele_sym))
+        #print(type(ele_sym))
         if type(string_or_number(ele_sym)) == str:
             try:
                 ele = elements.symbol(ele_sym)
@@ -116,7 +116,7 @@ def parse_file(file, sheet):
     label = []
 
     for index, row in data.iterrows():
-        print(row.Compound)
+        #print(row.Compound)
 
         if(is_nan(row.Compound)==False):
             data_point = create_template()
@@ -137,8 +137,8 @@ print(os.getcwd())
 
 
 #x_train, y_train = parse_file('./AIML_work/superconductor.xlsx', 'Sheet1')
-x_train, y_train = parse_file('superconductor.xlsx', 'Sheet1')
-x_train_neg, y_train_neg = parse_file('superconductor.xlsx', 'Non-SC')
+x_train, y_train = parse_file('seperated_results.xlsx', 'Fail')
+x_train_neg, y_train_neg = parse_file('seperated_results.xlsx', 'Success')
 #x_train, y_train = parse_file('superconductor.xlsx', 'Sheet1')
 
 x_train = np.concatenate((x_train, x_train_neg), axis=0)
