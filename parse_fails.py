@@ -3,7 +3,7 @@ import pandas as pd;
 def parse_csv(filename):
     parsed = pd.read_csv(filename)
     
-    a = parsed.query('Tc == 0')['name']
+    a = parsed.query('Tc == 0')
     
     a.to_excel('fails.xlsx')
 
