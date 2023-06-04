@@ -4,6 +4,7 @@ from  periodictable import elements
 
 print(elements._element)
 
+# onnx model inference on ORT
 ort_sess = ort.InferenceSession('model_pytorch.onnx')
 
 x = np.zeros((120), dtype=np.float32)

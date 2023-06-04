@@ -2,11 +2,8 @@
 import os
 print(os.getcwd())
 
-
-
 from  periodictable import elements
 import csv
-
 import pandas as pd
 import re
 import numpy as np
@@ -155,6 +152,8 @@ x_train_neg, y_train_neg = parse_file('seperated_results.xlsx', 'Success')
 x_train = np.concatenate((x_train, x_train_neg), axis=0)
 y_train = np.concatenate((y_train, y_train_neg), axis=0)
 
+
+# model constuction
 def create_model():
 
     class Net(nn.Module):
@@ -190,7 +189,6 @@ def create_model():
                 nn.ReLU(),
                 nn.Conv2d(128, 64, 1, stride=1),
                 nn.ReLU(),
-                #nn.MaxPool2d(3, stride=2),
                 nn.Dropout(0.25),
                 nn.Flatten(),
                 nn.Linear(128, 512),
@@ -237,7 +235,6 @@ net.to(dev)
 
 
 optimizer = optim.Adam(net.parameters(), lr=0.0001)
-#loss_fn = torch.nn.L1Loss(reduction='sum')
 loss_fn = torch.nn.MSELoss(reduction='sum')
 
 epochs = 5000
@@ -250,7 +247,7 @@ train_accuracy = []
 train_loss = []
 net.double()
 
-
+# prediction branch training
 for epoch in range(epochs):
 
     if epoch == 3000:
@@ -268,7 +265,6 @@ for epoch in range(epochs):
             yb_g_split_0 = (yb_g_split[0]).to(dev) #class
             yb_g_split_1 = (yb_g_split[1]).to(dev) #Tc 
             pred = net(xb_g)
-            #loss = loss_fn(pred[1], yb_g_split_0) + loss_fn(pred[0].flatten(), yb_g_split_1.flatten())
             loss = loss_fn(pred[0].flatten(), yb_g_split_1.flatten())
             loss.backward()
             return loss
@@ -345,6 +341,7 @@ for param_group in optimizer.param_groups:
 
 net.train()
 
+# freeze main + prediction branch 
 for param in net.seq1.parameters():
     param.requires_grad = False
 
@@ -356,8 +353,8 @@ pred_absdiff = []
 train_accuracy = []
 train_loss = []
 
+# train classification branch 
 for epoch in range(epochs):
-    
     if epoch == 3000:
         for param_group in optimizer.param_groups:
             param_group['lr'] = 0.00001
@@ -374,8 +371,6 @@ for epoch in range(epochs):
             yb_g_split_1 = (yb_g_split[1]).to(dev) #Tc 
             pred = net(xb_g)
             loss = loss_fn(pred[1], yb_g_split_0)
-            #loss = loss_fn(pred[1], yb_g_split_0) + loss_fn(pred[0].flatten(), yb_g_split_1.flatten())
-            #loss = loss_fn(pred[0].flatten(), yb_g_split_1.flatten())
             loss.backward()
             return loss
 
@@ -411,7 +406,6 @@ for epoch in range(epochs):
                 if pred_result == gt_data_result:
                     count+=1
 
-            #for i in range(len(pred_data)):
                 if pred_result == gt_data_result:
                     if pred_result == 1:
                         diff = diff + np.absolute(pred_data[i] - gt_data_tc[i])
@@ -448,7 +442,7 @@ plt.savefig("./class_train_loss.png",dpi = 600)
 
 np.savetxt("class_train_loss.csv", train_loss, delimiter=",", fmt='%f')
 
-
+# full model testing
 net.eval()
 diff = 0
 count = 0
@@ -483,7 +477,7 @@ with torch.no_grad():
 
 print((diff/(len(val_loader)*1)), (count/(len(val_loader)*1)))
 
-
+# model export to onnx
 net.to(torch.device("cpu"))
 net.float()
 dummy_input = torch.randn(1, 1, 10, 12)
