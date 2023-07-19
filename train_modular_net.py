@@ -228,7 +228,6 @@ for i in range(len(val_ds)):
 
 print(len(val_ds), total_tc_val/len(val_ds))
 
-quit()
 
 net = create_model()
 net.to(dev)
